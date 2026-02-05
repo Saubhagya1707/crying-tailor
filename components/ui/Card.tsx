@@ -21,7 +21,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     <div
       ref={ref}
       className={cn(
-        "rounded-xl border border-zinc-200 bg-white",
+        "rounded-xl border border-[var(--border)] bg-[var(--surface)]",
         paddingClasses[padding],
         shadow && "shadow-sm",
         className

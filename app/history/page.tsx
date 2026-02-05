@@ -36,17 +36,19 @@ export default async function HistoryPage() {
         description="Your tailored resumes. Click to view or export."
       />
       {docs.length === 0 ? (
-        <p className="mt-8 text-zinc-500">No tailored resumes yet. Create one from the Create page.</p>
+        <p className="mt-8 text-[var(--text-secondary)]">
+          No tailored resumes yet. Create one from the Create page.
+        </p>
       ) : (
         <ul className="mt-8 space-y-2">
           {docs.map((doc) => (
             <li key={doc.id}>
               <Link href={`/history/${doc.id}`} className="block transition-colors hover:opacity-95">
                 <Card padding="sm" className="text-left">
-                  <span className="font-medium text-zinc-900">
+                  <span className="font-medium text-[var(--text-primary)]">
                     {doc.title || "Untitled tailored resume"}
                   </span>
-                  <span className="ml-2 text-sm text-zinc-500">
+                  <span className="ml-2 text-sm text-[var(--text-secondary)]">
                     {new Date(doc.createdAt).toLocaleDateString()}
                   </span>
                 </Card>

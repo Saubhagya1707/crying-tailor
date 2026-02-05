@@ -5,9 +5,9 @@ type AlertProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 const variantClasses = {
-  error: "bg-red-50 text-red-700",
-  success: "bg-green-50 text-green-700",
-  info: "bg-zinc-100 text-zinc-800",
+  error: "border border-red-200 bg-red-50 text-red-700",
+  success: "border border-green-200 bg-green-50 text-green-700",
+  info: "border border-[var(--border)] bg-[var(--surface-muted)] text-[var(--text-secondary)]",
 };
 
 export function Alert({
