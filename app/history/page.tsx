@@ -8,6 +8,7 @@ import Link from "next/link";
 import { APP_NAME } from "@/lib/constants";
 import { AppLayout, PageHeader } from "@/components/layout";
 import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export const metadata: Metadata = {
   title: `History | ${APP_NAME}`,
@@ -36,9 +37,12 @@ export default async function HistoryPage() {
         description="Your tailored resumes. Click to view or export."
       />
       {docs.length === 0 ? (
-        <p className="mt-8 text-[var(--text-secondary)]">
-          No tailored resumes yet. Create one from the Create page.
-        </p>
+        <div className="mt-8">
+          <EmptyState
+            title="No tailored resumes yet"
+            description="Create a resume from the Create page to see it listed here."
+          />
+        </div>
       ) : (
         <ul className="mt-8 space-y-2">
           {docs.map((doc) => (

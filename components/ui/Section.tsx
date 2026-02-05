@@ -20,13 +20,15 @@ export function Section({
       {(title != null || action != null) && (
         <div className="flex flex-wrap items-center justify-between gap-2">
           {title != null && (
-            <h2 className="text-lg font-semibold text-zinc-900">{title}</h2>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">
+              {title}
+            </h2>
           )}
           {action != null && <div>{action}</div>}
         </div>
       )}
       {description != null && (
-        <p className="text-sm text-zinc-600">{description}</p>
+        <p className="text-sm text-[var(--text-secondary)]">{description}</p>
       )}
       {children}
     </Card>

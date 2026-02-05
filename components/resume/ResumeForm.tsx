@@ -53,6 +53,18 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
   const [isPending, startTransition] = useTransition();
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState<
+    "profile" | "education" | "experience" | "skills" | "projects" | "certifications"
+  >("profile");
+
+  const tabs = [
+    { id: "profile", label: "Profile" },
+    { id: "education", label: "Education" },
+    { id: "experience", label: "Experience" },
+    { id: "skills", label: "Skills" },
+    { id: "projects", label: "Projects" },
+    { id: "certifications", label: "Certifications" },
+  ] as const;
 
   const updateProfile = (key: keyof OnboardingInput["profile"], value: string) => {
     setData((d) => ({ ...d, profile: { ...d.profile, [key]: value } }));
@@ -113,11 +125,43 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <div
+          className="flex flex-wrap gap-2"
+          role="tablist"
+          aria-label="Settings sections"
+        >
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                className={[
+                  "rounded-full px-3 py-1.5 text-sm transition-colors",
+                  isActive
+                    ? "bg-[var(--brand)] text-[var(--brand-contrast)]"
+                    : "border border-[var(--border)] text-[var(--text-secondary)] hover:border-[var(--brand)] hover:text-[var(--brand)]",
+                ].join(" ")}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+        <Button type="submit" isLoading={isPending} className="ml-auto">
+          {submitLabel}
+        </Button>
+      </div>
       {formError && <Alert variant="error">{formError}</Alert>}
       {success && <Alert variant="success">Settings saved.</Alert>}
 
-      <Section title="Profile">
+      {activeTab === "profile" && (
+        <Section title="Profile">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <Label htmlFor="fullName">Full name</Label>
@@ -144,14 +188,16 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
             <Input id="websiteUrl" type="url" value={data.profile.websiteUrl ?? ""} onChange={(e) => updateProfile("websiteUrl", e.target.value)} placeholder="https://yourwebsite.com" />
           </div>
         </div>
-      </Section>
+        </Section>
+      )}
 
-      <Section title="Education" action={<Button type="button" variant="outline" onClick={addEducation}>Add education</Button>}>
-        {data.education.length === 0 && <p className="text-sm text-zinc-500">No entries yet.</p>}
+      {activeTab === "education" && (
+        <Section title="Education" action={<Button type="button" variant="outline" onClick={addEducation}>Add education</Button>}>
+        {data.education.length === 0 && <p className="text-sm text-[var(--text-secondary)]">No entries yet.</p>}
         {data.education.map((entry, i) => (
           <FieldSet key={i}>
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-zinc-600">Entry {i + 1}</span>
+              <span className="text-sm font-medium text-[var(--text-secondary)]">Entry {i + 1}</span>
               <Button type="button" variant="ghost" onClick={() => removeEducation(i)}>Remove</Button>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -182,14 +228,16 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
             </div>
           </FieldSet>
         ))}
-      </Section>
+        </Section>
+      )}
 
-      <Section title="Experience" action={<Button type="button" variant="outline" onClick={addExperience}>Add experience</Button>}>
-        {data.experience.length === 0 && <p className="text-sm text-zinc-500">No entries yet.</p>}
+      {activeTab === "experience" && (
+        <Section title="Experience" action={<Button type="button" variant="outline" onClick={addExperience}>Add experience</Button>}>
+        {data.experience.length === 0 && <p className="text-sm text-[var(--text-secondary)]">No entries yet.</p>}
         {data.experience.map((entry, i) => (
           <FieldSet key={i}>
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-zinc-600">Entry {i + 1}</span>
+              <span className="text-sm font-medium text-[var(--text-secondary)]">Entry {i + 1}</span>
               <Button type="button" variant="ghost" onClick={() => removeExperience(i)}>Remove</Button>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -229,9 +277,11 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
             </div>
           </FieldSet>
         ))}
-      </Section>
+        </Section>
+      )}
 
-      <Section title="Skills" action={<Button type="button" variant="outline" onClick={addSkills}>Add category</Button>}>
+      {activeTab === "skills" && (
+        <Section title="Skills" action={<Button type="button" variant="outline" onClick={addSkills}>Add category</Button>}>
         {data.skills.map((entry, i) => (
           <FieldSet key={i} className="flex flex-wrap items-start gap-3">
             <div className="min-w-[120px] flex-1">
@@ -249,13 +299,15 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
             <Button type="button" variant="ghost" onClick={() => removeSkills(i)} className="mt-6">Remove</Button>
           </FieldSet>
         ))}
-      </Section>
+        </Section>
+      )}
 
-      <Section title="Projects" action={<Button type="button" variant="outline" onClick={addProject}>Add project</Button>}>
+      {activeTab === "projects" && (
+        <Section title="Projects" action={<Button type="button" variant="outline" onClick={addProject}>Add project</Button>}>
         {data.projects.map((entry, i) => (
           <FieldSet key={i}>
             <div className="flex justify-between">
-              <span className="text-sm font-medium text-zinc-600">Project {i + 1}</span>
+              <span className="text-sm font-medium text-[var(--text-secondary)]">Project {i + 1}</span>
               <Button type="button" variant="ghost" onClick={() => removeProject(i)}>Remove</Button>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -278,9 +330,11 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
             </div>
           </FieldSet>
         ))}
-      </Section>
+        </Section>
+      )}
 
-      <Section title="Certifications" action={<Button type="button" variant="outline" onClick={addCertification}>Add certification</Button>}>
+      {activeTab === "certifications" && (
+        <Section title="Certifications" action={<Button type="button" variant="outline" onClick={addCertification}>Add certification</Button>}>
         {data.certifications.map((entry, i) => (
           <FieldSet key={i} className="flex flex-wrap items-end gap-3">
             <div className="min-w-[140px] flex-1">
@@ -302,11 +356,8 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
             <Button type="button" variant="ghost" onClick={() => removeCertification(i)}>Remove</Button>
           </FieldSet>
         ))}
-      </Section>
-
-      <div className="flex justify-end gap-3">
-        <Button type="submit" isLoading={isPending}>{submitLabel}</Button>
-      </div>
+        </Section>
+      )}
     </form>
   );
 }
