@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { OnboardingInput } from "@/lib/validations/resume";
 
-const modelName = "gemini-2.0-flash";
+const modelName = "gemini-2.5-flash";
 
 /**
  * Calls Gemini to generate a tailored resume based on the user's current resume text and the job description.
@@ -19,12 +19,17 @@ export async function generateTailoredResume(
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({ model: modelName });
 
-  const prompt = `You are a professional resume writer. Given the candidate's current resume and a job description, produce a tailored resume that:
+  const prompt = `
+  You are a professional resume writer. Given the candidate's current resume and a job description, produce a tailored resume that:
   - Keeps the same structure (sections: header, Education, Experience, Skills, Projects, Certifications as applicable)
   - Emphasizes and rephrases experience, skills, and achievements that match the job description
+  - Uses good design via Markdown formatting.
+  - Use bold whatever you think should be highlighted
+  - For subheadings use ### headers. 
+  - Links should be wrapped in markdown links and the labels should not be same as URL. i.e. [My Website](https://www.mywebsite.com)
+  - Phone numbers and email addresses should be wrapped in markdown links. i.e. [+1 234 567 8900](tel:+12345678900) or [jane.doe@example.com](mailto:jane.doe@example.com)
   - Uses keywords from the job description where appropriate without copying the job description
   - Keeps the content factual and based only on the candidate's resume; do not invent experience or skills
-  - Output plain text only, with clear section headers (e.g. ## Experience). No markdown beyond ## for headers.
   - Try to improve the resume text if it is not clear or has typos. i.e. spacing between words if not present.
   - i.e. SoftwareEngineer -> Software Engineer
   - You must fix all the typos and spacing between words if not present.
@@ -39,7 +44,7 @@ export async function generateTailoredResume(
   ${jobDescription}
   ---
 
-  Tailored resume (Markdown text):`;
+  Tailored resume (Markdown):`;
 
   const result = await model.generateContent(prompt);
   const response = result.response;

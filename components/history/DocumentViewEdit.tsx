@@ -71,6 +71,17 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
         setIsDownloadingPdf(false);
         return;
       }
+
+      const errorBody = await res.json().catch(() => null);
+      const errorText = errorBody?.error
+        ? String(errorBody.error)
+        : "Failed to generate PDF.";
+      setMessage({
+        type: "error",
+        text: `${errorText} If this persists, try Print → Save as PDF.`,
+      });
+      setIsDownloadingPdf(false);
+      return;
     } catch {
       // Fall through to image-based fallback
     }
