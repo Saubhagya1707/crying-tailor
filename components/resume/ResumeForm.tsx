@@ -1,9 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
+import { FieldSet } from "@/components/ui/FieldSet";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { Section } from "@/components/ui/Section";
 import { Textarea } from "@/components/ui/Textarea";
 import type {
   OnboardingInput,
@@ -111,19 +114,10 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10">
-      {formError && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
-          {formError}
-        </p>
-      )}
-      {success && (
-        <p className="rounded-lg bg-green-50 p-3 text-sm text-green-700" role="status">
-          Settings saved.
-        </p>
-      )}
+      {formError && <Alert variant="error">{formError}</Alert>}
+      {success && <Alert variant="success">Settings saved.</Alert>}
 
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-zinc-900">Profile</h2>
+      <Section title="Profile">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <Label htmlFor="fullName">Full name</Label>
@@ -150,16 +144,12 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
             <Input id="websiteUrl" type="url" value={data.profile.websiteUrl ?? ""} onChange={(e) => updateProfile("websiteUrl", e.target.value)} placeholder="https://yourwebsite.com" />
           </div>
         </div>
-      </section>
+      </Section>
 
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Education</h2>
-          <Button type="button" variant="outline" onClick={addEducation}>Add education</Button>
-        </div>
+      <Section title="Education" action={<Button type="button" variant="outline" onClick={addEducation}>Add education</Button>}>
         {data.education.length === 0 && <p className="text-sm text-zinc-500">No entries yet.</p>}
         {data.education.map((entry, i) => (
-          <div key={i} className="space-y-3 rounded-lg border border-zinc-100 bg-zinc-50/50 p-4">
+          <FieldSet key={i}>
             <div className="flex justify-between">
               <span className="text-sm font-medium text-zinc-600">Entry {i + 1}</span>
               <Button type="button" variant="ghost" onClick={() => removeEducation(i)}>Remove</Button>
@@ -190,18 +180,14 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
                 <Textarea value={entry.description ?? ""} onChange={(e) => updateEducation(i, "description", e.target.value)} placeholder="Relevant coursework..." rows={2} />
               </div>
             </div>
-          </div>
+          </FieldSet>
         ))}
-      </section>
+      </Section>
 
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Experience</h2>
-          <Button type="button" variant="outline" onClick={addExperience}>Add experience</Button>
-        </div>
+      <Section title="Experience" action={<Button type="button" variant="outline" onClick={addExperience}>Add experience</Button>}>
         {data.experience.length === 0 && <p className="text-sm text-zinc-500">No entries yet.</p>}
         {data.experience.map((entry, i) => (
-          <div key={i} className="space-y-3 rounded-lg border border-zinc-100 bg-zinc-50/50 p-4">
+          <FieldSet key={i}>
             <div className="flex justify-between">
               <span className="text-sm font-medium text-zinc-600">Entry {i + 1}</span>
               <Button type="button" variant="ghost" onClick={() => removeExperience(i)}>Remove</Button>
@@ -241,17 +227,13 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
                 />
               </div>
             </div>
-          </div>
+          </FieldSet>
         ))}
-      </section>
+      </Section>
 
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Skills</h2>
-          <Button type="button" variant="outline" onClick={addSkills}>Add category</Button>
-        </div>
+      <Section title="Skills" action={<Button type="button" variant="outline" onClick={addSkills}>Add category</Button>}>
         {data.skills.map((entry, i) => (
-          <div key={i} className="flex flex-wrap items-start gap-3 rounded-lg border border-zinc-100 bg-zinc-50/50 p-4">
+          <FieldSet key={i} className="flex flex-wrap items-start gap-3">
             <div className="min-w-[120px] flex-1">
               <Label>Category</Label>
               <Input value={entry.category ?? ""} onChange={(e) => updateSkills(i, "category", e.target.value)} placeholder="e.g. Languages, Tools" />
@@ -265,17 +247,13 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
               />
             </div>
             <Button type="button" variant="ghost" onClick={() => removeSkills(i)} className="mt-6">Remove</Button>
-          </div>
+          </FieldSet>
         ))}
-      </section>
+      </Section>
 
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Projects</h2>
-          <Button type="button" variant="outline" onClick={addProject}>Add project</Button>
-        </div>
+      <Section title="Projects" action={<Button type="button" variant="outline" onClick={addProject}>Add project</Button>}>
         {data.projects.map((entry, i) => (
-          <div key={i} className="space-y-3 rounded-lg border border-zinc-100 bg-zinc-50/50 p-4">
+          <FieldSet key={i}>
             <div className="flex justify-between">
               <span className="text-sm font-medium text-zinc-600">Project {i + 1}</span>
               <Button type="button" variant="ghost" onClick={() => removeProject(i)}>Remove</Button>
@@ -298,17 +276,13 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
                 <Textarea value={entry.description ?? ""} onChange={(e) => updateProject(i, "description", e.target.value)} placeholder="What you built..." rows={2} />
               </div>
             </div>
-          </div>
+          </FieldSet>
         ))}
-      </section>
+      </Section>
 
-      <section className="space-y-4 rounded-xl border border-zinc-200 bg-white p-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Certifications</h2>
-          <Button type="button" variant="outline" onClick={addCertification}>Add certification</Button>
-        </div>
+      <Section title="Certifications" action={<Button type="button" variant="outline" onClick={addCertification}>Add certification</Button>}>
         {data.certifications.map((entry, i) => (
-          <div key={i} className="flex flex-wrap items-end gap-3 rounded-lg border border-zinc-100 bg-zinc-50/50 p-4">
+          <FieldSet key={i} className="flex flex-wrap items-end gap-3">
             <div className="min-w-[140px] flex-1">
               <Label>Name</Label>
               <Input value={entry.name ?? ""} onChange={(e) => updateCertification(i, "name", e.target.value)} placeholder="Certification name" />
@@ -326,9 +300,9 @@ export function ResumeForm({ initialData, onSubmit, submitLabel = "Save" }: Resu
               <Input type="url" value={entry.url ?? ""} onChange={(e) => updateCertification(i, "url", e.target.value)} placeholder="https://..." />
             </div>
             <Button type="button" variant="ghost" onClick={() => removeCertification(i)}>Remove</Button>
-          </div>
+          </FieldSet>
         ))}
-      </section>
+      </Section>
 
       <div className="flex justify-end gap-3">
         <Button type="submit" isLoading={isPending}>{submitLabel}</Button>

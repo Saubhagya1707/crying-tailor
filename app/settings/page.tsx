@@ -11,9 +11,9 @@ import {
   certifications,
 } from "@/lib/db/schema";
 import { eq, asc } from "drizzle-orm";
-import Link from "next/link";
 import { SettingsForm } from "@/components/settings/SettingsForm";
 import { ImportResumeSection } from "@/components/settings/ImportResumeSection";
+import { AppLayout, PageHeader } from "@/components/layout";
 import type { OnboardingInput } from "@/lib/validations/resume";
 
 export default async function SettingsPage() {
@@ -81,43 +81,15 @@ export default async function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50">
-      <header className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
-          <Link href="/dashboard" className="font-semibold text-zinc-900">
-            ResumeTailor
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm text-zinc-600 hover:text-zinc-900">
-              Dashboard
-            </Link>
-            <Link href="/create" className="text-sm text-zinc-600 hover:text-zinc-900">
-              Create
-            </Link>
-            <Link href="/history" className="text-sm text-zinc-600 hover:text-zinc-900">
-              History
-            </Link>
-            <Link href="/settings" className="text-sm font-medium text-zinc-900">
-              Settings
-            </Link>
-            <form action="/api/auth/signout" method="POST">
-              <button type="submit" className="text-sm text-zinc-600 hover:text-zinc-900">
-                Logout
-              </button>
-            </form>
-          </nav>
-        </div>
-      </header>
-      <main className="mx-auto max-w-2xl px-4 py-8">
-        <h1 className="text-2xl font-semibold text-zinc-900">Settings</h1>
-        <p className="mt-1 text-zinc-600">
-          Edit your resume details. These are used to generate tailored resumes.
-        </p>
-        <div className="mt-8 space-y-10">
-          <ImportResumeSection />
-          <SettingsForm initialData={initialData} />
-        </div>
-      </main>
-    </div>
+    <AppLayout activePath="settings">
+      <PageHeader
+        title="Settings"
+        description="Edit your resume details. These are used to generate tailored resumes."
+      />
+      <div className="mt-8 space-y-10">
+        <ImportResumeSection />
+        <SettingsForm initialData={initialData} />
+      </div>
+    </AppLayout>
   );
 }

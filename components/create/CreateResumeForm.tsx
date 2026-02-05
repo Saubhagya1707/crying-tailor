@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
+import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
@@ -36,11 +37,7 @@ export function CreateResumeForm({ action }: CreateResumeFormProps) {
 
   return (
     <form action={formAction} className="space-y-6">
-      {error && (
-        <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <Alert variant="error">{error}</Alert>}
       <div>
         <Label htmlFor="title">Title (optional)</Label>
         <Input

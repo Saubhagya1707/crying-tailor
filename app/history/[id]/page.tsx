@@ -5,6 +5,7 @@ import { db, profiles, tailoredDocuments } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import Link from "next/link";
 import { DocumentViewEdit } from "@/components/history/DocumentViewEdit";
+import { AppLayout, PageHeader } from "@/components/layout";
 
 export default async function HistoryDocumentPage({
   params,
@@ -25,56 +26,28 @@ export default async function HistoryDocumentPage({
   if (!doc || doc.userId !== session.user.id) notFound();
 
   return (
-    <div className="min-h-screen bg-zinc-50">
-      <header className="border-b border-zinc-200 bg-white">
-        <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4">
-          <Link href="/dashboard" className="font-semibold text-zinc-900">
-            ResumeTailor
-          </Link>
-          <nav className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm text-zinc-600 hover:text-zinc-900">
-              Dashboard
-            </Link>
-            <Link href="/create" className="text-sm text-zinc-600 hover:text-zinc-900">
-              Create
-            </Link>
-            <Link href="/history" className="text-sm font-medium text-zinc-900">
-              History
-            </Link>
-            <Link href="/settings" className="text-sm text-zinc-600 hover:text-zinc-900">
-              Settings
-            </Link>
-            <form action="/api/auth/signout" method="POST">
-              <button type="submit" className="text-sm text-zinc-600 hover:text-zinc-900">
-                Logout
-              </button>
-            </form>
-          </nav>
-        </div>
-      </header>
-      <main className="mx-auto max-w-2xl px-4 py-8">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-zinc-900">
-              {doc.title || "Tailored resume"}
-            </h1>
-            <p className="mt-1 text-sm text-zinc-500">
-              Created {new Date(doc.createdAt).toLocaleString()}
-            </p>
-          </div>
+    <AppLayout activePath="history">
+      <PageHeader
+        title={doc.title || "Tailored resume"}
+        description={
+          <span className="text-sm text-zinc-500">
+            Created {new Date(doc.createdAt).toLocaleString()}
+          </span>
+        }
+        actions={
           <Link
             href="/history"
-            className="text-sm font-medium text-zinc-600 hover:text-zinc-900"
+            className="text-sm font-medium text-zinc-600 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 rounded"
           >
             ← Back to history
           </Link>
-        </div>
-        <DocumentViewEdit
-          id={doc.id}
-          title={doc.title}
-          generatedContent={doc.generatedContent}
-        />
-      </main>
-    </div>
+        }
+      />
+      <DocumentViewEdit
+        id={doc.id}
+        title={doc.title}
+        generatedContent={doc.generatedContent}
+      />
+    </AppLayout>
   );
 }

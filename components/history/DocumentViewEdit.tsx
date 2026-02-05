@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { useReactToPrint } from "react-to-print";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
+import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
-import { Textarea } from "@/components/ui/Textarea";
+import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
-import { updateTailoredDocument } from "@/app/history/[id]/actions";
+import { Textarea } from "@/components/ui/Textarea";
 import { MarkdownContent } from "@/components/ui/MarkdownContent";
+import { updateTailoredDocument } from "@/app/history/[id]/actions";
 
 type DocumentViewEditProps = {
   id: string;
@@ -20,8 +22,6 @@ type DocumentViewEditProps = {
 
 const A4_WIDTH_MM = 210;
 const A4_HEIGHT_MM = 297;
-const A4_WIDTH_PX = 794; // at 96 dpi
-const A4_HEIGHT_PX = 1123;
 
 export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEditProps) {
   const router = useRouter();
@@ -43,16 +43,48 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
   });
 
   async function handleDownloadPdf() {
-    const el = contentRef.current;
-    if (!el) return;
     setIsDownloadingPdf(true);
+    setMessage(null);
+    try {
+      // Prefer text-based PDF (selectable text) via API
+      const res = await fetch("/api/resume-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title ?? undefined,
+          content: generatedContent,
+        }),
+      });
+      if (res.ok) {
+        const blob = await res.blob();
+        const filename = (res.headers.get("Content-Disposition")?.match(/filename="([^"]+)"/)?.[1])
+          ?? (title || "tailored-resume").replace(/[^a-z0-9-]/gi, "-").toLowerCase() + ".pdf";
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        setIsDownloadingPdf(false);
+        return;
+      }
+    } catch {
+      // Fall through to image-based fallback
+    }
+
+    // Fallback: image-based PDF (text not selectable)
+    const el = contentRef.current;
+    if (!el) {
+      setMessage({ type: "error", text: "Failed to generate PDF. Try Print → Save as PDF instead." });
+      setIsDownloadingPdf(false);
+      return;
+    }
     try {
       const canvas = await html2canvas(el, {
         scale: 2,
         useCORS: true,
         logging: false,
         backgroundColor: "#ffffff",
-        // html2canvas doesn't support lab()/oklch() from Tailwind v4; remove stylesheets and use hex-only styles
         onclone: (clonedDoc, clonedEl) => {
           clonedDoc.querySelectorAll("link[rel=stylesheet], style").forEach((s) => s.remove());
           const style = clonedDoc.createElement("style");
@@ -121,14 +153,7 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
   if (isEditing) {
     return (
       <form onSubmit={handleSave} className="space-y-4">
-        {message && (
-          <p
-            className={`rounded-lg p-3 text-sm ${message.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}
-            role="alert"
-          >
-            {message.text}
-          </p>
-        )}
+        {message && <Alert variant={message.type}>{message.text}</Alert>}
         <div>
           <Label htmlFor="edit-title">Title</Label>
           <Input
@@ -176,6 +201,7 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
 
   return (
     <div>
+      {message && <Alert variant={message.type} className="mb-4">{message.text}</Alert>}
       <div className="mb-4 flex justify-end gap-2">
         <Button
           type="button"
@@ -193,15 +219,19 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
           Edit
         </Button>
       </div>
-      {/* Ref wraps visible content so print dialog and PDF capture both get the same content */}
-      <div ref={contentRef} className="rounded-xl border border-zinc-200 bg-white p-6">
+      <Card
+        ref={contentRef}
+        padding="none"
+        shadow
+        className="resume-document mx-auto max-w-[210mm] py-8 px-10 print:max-w-none print:border-0 print:shadow-none"
+      >
         {title ? (
           <h2 className="mb-4 border-b border-zinc-200 pb-2 text-lg font-semibold text-zinc-900">
             {title}
           </h2>
         ) : null}
         <MarkdownContent content={generatedContent} />
-      </div>
+      </Card>
     </div>
   );
 }

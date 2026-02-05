@@ -8,13 +8,14 @@ type MarkdownContentProps = {
   className?: string;
 };
 
+// Resume-optimized typography: clear hierarchy for name, section titles, and body
 const proseClasses = {
-  h1: "mt-6 mb-3 text-xl font-semibold text-zinc-900 border-b border-zinc-200 pb-1",
-  h2: "mt-6 mb-2 text-lg font-semibold text-zinc-900",
+  h1: "mt-0 mb-1 text-2xl font-bold text-zinc-900 tracking-tight",
+  h2: "mt-6 mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-200 pb-1",
   h3: "mt-4 mb-1 text-base font-semibold text-zinc-800",
   p: "mb-2 text-sm text-zinc-700 leading-relaxed",
-  ul: "mb-3 list-disc pl-6 space-y-1 text-sm text-zinc-700",
-  ol: "mb-3 list-decimal pl-6 space-y-1 text-sm text-zinc-700",
+  ul: "mb-3 list-disc pl-5 space-y-0.5 text-sm text-zinc-700",
+  ol: "mb-3 list-decimal pl-5 space-y-0.5 text-sm text-zinc-700",
   li: "leading-relaxed",
   strong: "font-semibold text-zinc-900",
   br: "block",

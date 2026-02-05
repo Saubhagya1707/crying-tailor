@@ -35,6 +35,7 @@ jobs:
 
       - name: Test
         run: npm run test
+        # Includes lib/api-protection.test.ts (protected routes 401, public routes non-401)
 
       - name: Build
         run: npm run build

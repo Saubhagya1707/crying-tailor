@@ -10,7 +10,7 @@ export const Input = forwardRef<
       <input
         ref={ref}
         className={cn(
-          "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm transition-colors placeholder:text-zinc-500 focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground disabled:opacity-50",
+          "w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 transition-colors placeholder:text-zinc-500 focus:border-foreground focus:outline-none focus:ring-1 focus:ring-foreground disabled:opacity-50",
           error && "border-red-500 focus:border-red-500 focus:ring-red-500",
           className
         )}

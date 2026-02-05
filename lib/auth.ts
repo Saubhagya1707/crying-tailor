@@ -1,8 +1,24 @@
-import type { NextAuthOptions } from "next-auth";
+import type { NextAuthOptions, Session } from "next-auth";
+import { getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { NextResponse } from "next/server";
 import { db, users } from "@/lib/db";
-import { eq, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
+
+/**
+ * Use at the top of protected API route handlers. Returns the session or a 401
+ * NextResponse. If it returns a response, the handler should return it immediately.
+ */
+export async function requireApiAuth(): Promise<
+  { session: Session } | { response: NextResponse }
+> {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    return { response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
+  }
+  return { session };
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [

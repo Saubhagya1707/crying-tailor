@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
+import { Section } from "@/components/ui/Section";
+import { Alert } from "@/components/ui/Alert";
 import { importFromResume } from "@/app/settings/actions";
 
 export function ImportResumeSection() {
@@ -33,19 +35,14 @@ export function ImportResumeSection() {
   };
 
   return (
-    <section className="mb-10 rounded-xl border border-zinc-200 bg-white p-6">
-      <h2 className="text-lg font-semibold text-zinc-900">Import from existing resume</h2>
-      <p className="mt-1 text-sm text-zinc-600">
-        Paste your resume text below. We&apos;ll use AI to extract your profile, education, experience, skills, projects, and certifications. You can review and edit the result in the form below before saving.
-      </p>
-      <form onSubmit={handleImport} className="mt-4 space-y-4">
+    <Section
+      title="Import from existing resume"
+      description="Paste your resume text below. We'll use AI to extract your profile, education, experience, skills, projects, and certifications. You can review and edit the result in the form below before saving."
+      className="mb-10"
+    >
+      <form onSubmit={handleImport} className="space-y-4">
         {message && (
-          <p
-            className={`rounded-lg p-3 text-sm ${message.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}
-            role="alert"
-          >
-            {message.text}
-          </p>
+          <Alert variant={message.type}>{message.text}</Alert>
         )}
         <div>
           <Label htmlFor="resumeText">Paste resume text</Label>
@@ -66,6 +63,6 @@ export function ImportResumeSection() {
           Import and replace my details
         </Button>
       </form>
-    </section>
+    </Section>
   );
 }

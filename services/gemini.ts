@@ -20,23 +20,26 @@ export async function generateTailoredResume(
   const model = genAI.getGenerativeModel({ model: modelName });
 
   const prompt = `You are a professional resume writer. Given the candidate's current resume and a job description, produce a tailored resume that:
-- Keeps the same structure (sections: header, Education, Experience, Skills, Projects, Certifications as applicable)
-- Emphasizes and rephrases experience, skills, and achievements that match the job description
-- Uses keywords from the job description where appropriate without copying the job description
-- Keeps the content factual and based only on the candidate's resume; do not invent experience or skills
-- Output plain text only, with clear section headers (e.g. ## Experience). No markdown beyond ## for headers.
+  - Keeps the same structure (sections: header, Education, Experience, Skills, Projects, Certifications as applicable)
+  - Emphasizes and rephrases experience, skills, and achievements that match the job description
+  - Uses keywords from the job description where appropriate without copying the job description
+  - Keeps the content factual and based only on the candidate's resume; do not invent experience or skills
+  - Output plain text only, with clear section headers (e.g. ## Experience). No markdown beyond ## for headers.
+  - Try to improve the resume text if it is not clear or has typos. i.e. spacing between words if not present.
+  - i.e. SoftwareEngineer -> Software Engineer
+  - You must fix all the typos and spacing between words if not present.
 
-CANDIDATE'S CURRENT RESUME:
----
-${currentResumeText}
----
+  CANDIDATE'S CURRENT RESUME:
+  ---
+  ${currentResumeText}
+  ---
 
-JOB DESCRIPTION:
----
-${jobDescription}
----
+  JOB DESCRIPTION:
+  ---
+  ${jobDescription}
+  ---
 
-Tailored resume (plain text with ## headers):`;
+  Tailored resume (Markdown text):`;
 
   const result = await model.generateContent(prompt);
   const response = result.response;
@@ -110,16 +113,20 @@ export async function extractResumeDetails(resumeText: string): Promise<Onboardi
     },
   });
 
-  const prompt = `You are a resume parser. Extract all information from the following resume text into the exact JSON structure below. Preserve dates, bullet points, and wording; use empty string or empty array when a section or field is not present. Do not invent or add information not in the resume.
+  const prompt = `You are a resume parser.
+  Extract all information from the following resume text into the exact JSON structure below. Preserve dates, bullet points, and wording; use empty string or empty array when a section or field is not present. 
+  Do not invent or add information not in the resume.
+  Try to improve the resume text if it is not clear or has typos. i.e. spacing between words if not present.
+  i.e. SoftwareEngineer -> Software Engineer
 
-${RESUME_EXTRACT_JSON_SCHEMA}
+  ${RESUME_EXTRACT_JSON_SCHEMA}
 
-RESUME TEXT:
----
-${resumeText}
----
+  RESUME TEXT:
+  ---
+  ${resumeText}
+  ---
 
-Return only the JSON object, no other text.`;
+  Return only the JSON object, no other text.`;
 
   const result = await model.generateContent(prompt);
   const response = result.response;
