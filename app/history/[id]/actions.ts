@@ -13,6 +13,10 @@ const updateSchema = z.object({
   generatedContent: z.string().min(1, "Content cannot be empty.").max(500000),
 });
 
+const deleteSchema = z.object({
+  id: z.string().uuid(),
+});
+
 export async function updateTailoredDocument(formData: FormData) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
@@ -47,6 +51,30 @@ export async function updateTailoredDocument(formData: FormData) {
       updatedAt: new Date(),
     })
     .where(eq(tailoredDocuments.id, parsed.data.id));
+
+  return { ok: true as const };
+}
+
+export async function deleteTailoredDocument(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) redirect("/login");
+
+  const id = formData.get("id")?.toString() ?? "";
+  const parsed = deleteSchema.safeParse({ id });
+  if (!parsed.success) {
+    return { ok: false as const, error: { id: ["Invalid document id."] } };
+  }
+
+  const [existing] = await db
+    .select({ userId: tailoredDocuments.userId })
+    .from(tailoredDocuments)
+    .where(eq(tailoredDocuments.id, parsed.data.id));
+
+  if (!existing || existing.userId !== session.user.id) {
+    return { ok: false as const, error: { id: ["Document not found."] } };
+  }
+
+  await db.delete(tailoredDocuments).where(eq(tailoredDocuments.id, parsed.data.id));
 
   return { ok: true as const };
 }

@@ -8,11 +8,12 @@ import html2canvas from "html2canvas";
 import { Alert } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
 import { Textarea } from "@/components/ui/Textarea";
 import { MarkdownContent } from "@/components/ui/MarkdownContent";
-import { updateTailoredDocument } from "@/app/history/[id]/actions";
+import { deleteTailoredDocument, updateTailoredDocument } from "@/app/history/[id]/actions";
 
 type DocumentViewEditProps = {
   id: string;
@@ -32,6 +33,8 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
   const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
   const [isPending, startTransition] = useTransition();
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const handlePrint = useReactToPrint({
     contentRef,
@@ -150,6 +153,29 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
     });
   };
 
+  const handleDelete = () => {
+    setIsConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    setIsDeleting(true);
+    setMessage(null);
+    const formData = new FormData();
+    formData.set("id", id);
+    startTransition(async () => {
+      const result = await deleteTailoredDocument(formData);
+      if (result.ok) {
+        router.push("/history");
+        router.refresh();
+      } else {
+        const err = result.error?.id?.[0] ?? "Failed to delete.";
+        setMessage({ type: "error", text: err });
+        setIsDeleting(false);
+        setIsConfirmOpen(false);
+      }
+    });
+  };
+
   if (isEditing) {
     return (
       <form onSubmit={handleSave} className="space-y-4">
@@ -202,7 +228,7 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
   return (
     <div>
       {message && <Alert variant={message.type} className="mb-4">{message.text}</Alert>}
-      <div className="mb-4 flex justify-end gap-2">
+      <div className="mb-4 flex flex-wrap justify-end gap-2">
         <Button
           type="button"
           variant="outline"
@@ -218,7 +244,25 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
         <Button type="button" variant="outline" onClick={() => setIsEditing(true)}>
           Edit
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className="border-red-200 text-red-600 hover:border-red-300 hover:text-red-700"
+        >
+          Delete
+        </Button>
       </div>
+      <ConfirmDialog
+        open={isConfirmOpen}
+        title="Delete this tailored resume?"
+        description="This action cannot be undone."
+        confirmLabel="Delete"
+        isLoading={isDeleting}
+        onCancel={() => setIsConfirmOpen(false)}
+        onConfirm={confirmDelete}
+      />
       <Card
         ref={contentRef}
         padding="none"

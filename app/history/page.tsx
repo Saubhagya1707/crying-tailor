@@ -9,6 +9,7 @@ import { APP_NAME } from "@/lib/constants";
 import { AppLayout, PageHeader } from "@/components/layout";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { HistoryDeleteButton } from "@/components/history/HistoryDeleteButton";
 
 export const metadata: Metadata = {
   title: `History | ${APP_NAME}`,
@@ -47,16 +48,22 @@ export default async function HistoryPage() {
         <ul className="mt-8 space-y-2">
           {docs.map((doc) => (
             <li key={doc.id}>
-              <Link href={`/history/${doc.id}`} className="block transition-colors hover:opacity-95">
-                <Card padding="sm" className="text-left">
-                  <span className="font-medium text-[var(--text-primary)]">
-                    {doc.title || "Untitled tailored resume"}
-                  </span>
-                  <span className="ml-2 text-sm text-[var(--text-secondary)]">
-                    {new Date(doc.createdAt).toLocaleDateString()}
-                  </span>
-                </Card>
-              </Link>
+              <Card padding="sm" className="text-left">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-[200px]">
+                    <Link
+                      href={`/history/${doc.id}`}
+                      className="font-medium text-[var(--text-primary)] hover:underline"
+                    >
+                      {doc.title || "Untitled tailored resume"}
+                    </Link>
+                    <div className="text-sm text-[var(--text-secondary)]">
+                      {new Date(doc.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <HistoryDeleteButton id={doc.id} />
+                </div>
+              </Card>
             </li>
           ))}
         </ul>
