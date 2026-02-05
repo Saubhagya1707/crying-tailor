@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
-export default function LoginPage() {
+function LoginForm() {
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") ?? "/dashboard";
   const [email, setEmail] = useState("");
@@ -99,5 +99,34 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+function LoginFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+      <div className="w-full max-w-sm rounded-xl border border-zinc-200 bg-white p-8 shadow-sm">
+        <h1 className="text-xl font-semibold tracking-tight text-zinc-900">
+          Sign in
+        </h1>
+        <p className="mt-1 text-sm text-zinc-500">
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="font-medium text-foreground hover:underline">
+            Sign up
+          </Link>
+        </p>
+        <div className="mt-6 flex justify-center py-8 text-sm text-zinc-500">
+          Loading…
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginFallback />}>
+      <LoginForm />
+    </Suspense>
   );
 }
