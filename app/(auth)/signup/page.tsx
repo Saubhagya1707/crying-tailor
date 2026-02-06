@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AuthCard } from "@/components/layout";
 import { Alert } from "@/components/ui/Alert";
@@ -10,12 +8,12 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
 export default function SignUpPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -29,26 +27,33 @@ export default function SignUpPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Sign up failed.");
+        setError(typeof data.error === "string" ? data.error : "Sign up failed.");
         return;
       }
-      const signInRes = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-        callbackUrl: "/onboarding",
-      });
-      if (signInRes?.error) {
-        setError("Account created but sign in failed. Try logging in.");
-        return;
-      }
-      router.push("/onboarding");
-      router.refresh();
+      setSuccess(true);
     } catch {
       setError("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (success) {
+    return (
+      <AuthCard>
+        <h1 className="text-xl font-semibold tracking-tight text-zinc-900">
+          Check your email
+        </h1>
+        <p className="mt-1 text-sm text-zinc-500">
+          We&apos;ve sent a verification link to your email. Click it to activate your account, then sign in.
+        </p>
+        <p className="mt-4">
+          <Link href="/login" className="font-medium text-foreground hover:underline">
+            Go to sign in
+          </Link>
+        </p>
+      </AuthCard>
+    );
   }
 
   return (

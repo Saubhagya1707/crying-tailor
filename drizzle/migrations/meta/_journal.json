@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 0,
+      "tag": "0000_initial",
+      "breakpoints": false
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1,
+      "tag": "0001_verification_tokens",
+      "breakpoints": false
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 2,
+      "tag": "0002_verify_existing_users",
+      "breakpoints": false
+    }
+  ]
+}
