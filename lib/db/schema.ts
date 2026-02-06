@@ -83,6 +83,18 @@ export const certifications = pgTable("certifications", {
   orderIndex: integer("order_index").default(0),
 });
 
+export const verificationTokens = pgTable(
+  "verification_tokens",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    token: text("token").notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+  }
+);
+
 export const tailoredDocuments = pgTable("tailored_documents", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),

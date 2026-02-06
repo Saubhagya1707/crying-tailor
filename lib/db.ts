@@ -1,1 +1,1 @@
-export { db, users, profiles, education, experience, skills, projects, certifications, tailoredDocuments } from "./db/index";
+export { db, users, profiles, education, experience, skills, projects, certifications, verificationTokens, tailoredDocuments } from "./db/index";

@@ -19,7 +19,13 @@ function LoginForm() {
 
   useEffect(() => {
     const err = searchParams.get("error");
-    if (err) setError("Invalid email or password.");
+    if (err === "EmailNotVerified") {
+      setError("Please verify your email. Check your inbox for the link.");
+    } else if (err === "InvalidOrExpiredLink") {
+      setError("Verification link is invalid or has expired. Please request a new one.");
+    } else if (err) {
+      setError("Invalid email or password.");
+    }
   }, [searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -34,7 +40,11 @@ function LoginForm() {
         callbackUrl,
       });
       if (res?.error) {
-        setError("Invalid email or password.");
+        setError(
+          res.error === "EmailNotVerified"
+            ? "Please verify your email. Check your inbox for the link."
+            : "Invalid email or password."
+        );
         return;
       }
       if (res?.ok && res?.url) {
@@ -60,6 +70,9 @@ function LoginForm() {
         </Link>
       </p>
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        {searchParams.get("verified") === "1" && (
+          <Alert variant="success">Email verified. You can sign in.</Alert>
+        )}
         {error && <Alert variant="error">{error}</Alert>}
         <div>
           <label htmlFor="login-email" className="mb-1 block text-sm font-medium text-zinc-700">

@@ -53,8 +53,10 @@ The repo includes a workflow at `.github/workflows/ci.yml` that runs on every pu
    |--------------------|--------------------------------------|
    | `DATABASE_URL`     | Neon (or other) PostgreSQL URL       |
    | `NEXTAUTH_SECRET`  | Random secret for NextAuth (e.g. `openssl rand -base64 32`) |
-   | `NEXTAUTH_URL`     | App URL (e.g. `https://your-app.vercel.app`) |
+   | `NEXTAUTH_URL`     | App URL (e.g. `https://your-app.vercel.app`). Must be correct for email verification links. |
    | `GEMINI_API_KEY`   | Google AI Studio API key for tailoring |
+   | `RESEND_API_KEY`   | Resend API key for sending verification emails |
+   | `RESEND_FROM`      | (Optional) From address for emails (e.g. `Resume Tailor <cryingtailor@resend.dev>`). Defaults to `cryingtailor@resend.dev`. |
 
    Do **not** put these in the repo or in the workflow file; use the host’s secret/env UI.
 
