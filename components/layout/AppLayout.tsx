@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { APP_NAME, CONTENT_WIDTH_NARROW, CONTENT_WIDTH_WIDE } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -38,8 +39,9 @@ export function AppLayout({
       </a>
       <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-[var(--border)] bg-[var(--surface)] md:flex">
         <div className="flex h-14 items-center border-b border-[var(--border)] px-6">
-          <Link href="/dashboard" className="text-sm font-semibold text-[var(--text-primary)]">
-            {APP_NAME}
+          <Link href="/dashboard" className="flex items-center gap-2 text-sm font-semibold text-[var(--text-primary)]">
+            <Image src="/logo.png" alt={`${APP_NAME} logo`} width={20} height={20} />
+            <span>{APP_NAME}</span>
           </Link>
         </div>
         <nav className="flex-1 space-y-1 px-4 py-4">

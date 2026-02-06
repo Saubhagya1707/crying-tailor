@@ -71,17 +71,7 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
         setIsDownloadingPdf(false);
         return;
       }
-
-      const errorBody = await res.json().catch(() => null);
-      const errorText = errorBody?.error
-        ? String(errorBody.error)
-        : "Failed to generate PDF.";
-      setMessage({
-        type: "error",
-        text: `${errorText} If this persists, try Print → Save as PDF.`,
-      });
-      setIsDownloadingPdf(false);
-      return;
+      throw new Error("PDF API failed");
     } catch {
       // Fall through to image-based fallback
     }
@@ -89,7 +79,6 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
     // Fallback: image-based PDF (text not selectable)
     const el = contentRef.current;
     if (!el) {
-      setMessage({ type: "error", text: "Failed to generate PDF. Try Print → Save as PDF instead." });
       setIsDownloadingPdf(false);
       return;
     }
@@ -138,7 +127,6 @@ export function DocumentViewEdit({ id, title, generatedContent }: DocumentViewEd
       doc.save(filename);
     } catch (err) {
       console.error("PDF download failed:", err);
-      setMessage({ type: "error", text: "Failed to generate PDF. Try Print → Save as PDF instead." });
     } finally {
       setIsDownloadingPdf(false);
     }

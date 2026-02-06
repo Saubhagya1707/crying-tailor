@@ -1,3 +1,6 @@
+import Image from "next/image";
+import { APP_NAME } from "@/lib/constants";
+
 export type AppNavPath = "dashboard" | "create" | "history" | "settings";
 
 type AppHeaderProps = {
@@ -17,12 +20,15 @@ export function AppHeader({ activePath }: AppHeaderProps) {
   return (
     <header className="border-b border-[var(--border)] bg-[var(--surface)]">
       <div className="flex h-14 items-center justify-between px-6">
-        <div>
-          <div className="text-sm font-semibold text-[var(--text-primary)]">
-            {activeLabel}
-          </div>
-          <div className="text-xs text-[var(--text-secondary)]">
-            ResumeTailor workspace
+        <div className="flex items-center gap-3">
+          <Image src="/logo.png" alt={`${APP_NAME} logo`} width={24} height={24} />
+          <div>
+            <div className="text-sm font-semibold text-[var(--text-primary)]">
+              {activeLabel}
+            </div>
+            <div className="text-xs text-[var(--text-secondary)]">
+              ResumeTailor workspace
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
